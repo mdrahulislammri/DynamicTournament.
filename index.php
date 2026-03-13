@@ -4,17 +4,21 @@ render_header('Home');
 ?>
 <div class="grid md:grid-cols-2 gap-4">
   <section class="bg-white p-6 rounded shadow">
-    <h1 class="text-2xl font-bold">Online Esports Tournament Management</h1>
-    <p class="text-slate-700 mt-4">Manage Free Fire, PUBG Mobile, Ludo, 8 Ball Pool and Carrom Pool tournaments with automatic bracket and leaderboard updates.</p>
-    <a class="btn mt-4" href="<?= e(config('base_url')) ?>/tournaments/list.php">Explore Tournaments</a>
+    <p class="text-slate-500">Professional Esports Control Panel</p>
+    <h1 class="text-2xl font-bold">Run dynamic tournaments with confidence.</h1>
+    <p class="text-slate-700 mt-4">Create and manage Free Fire, PUBG Mobile, Ludo, 8 Ball Pool, and Carrom Pool events with secure access, live match management, private room credentials, and auto-updating leaderboards.</p>
+    <div class="mt-4">
+      <a class="btn" href="<?= e(config('base_url')) ?>/tournaments/list.php">Explore Tournaments</a>
+      <a class="btn" href="<?= e(config('base_url')) ?>/auth/register.php" style="margin-left:.5rem;background:linear-gradient(135deg,#4fd1c5,#40b7ad)">Get Started</a>
+    </div>
   </section>
   <section class="bg-white p-6 rounded shadow">
-    <h2 class="font-semibold">Features</h2>
+    <h2 class="font-semibold">Platform Highlights</h2>
     <ul>
-      <li>Role-based authentication</li>
-      <li>Knockout / League / Battle Royale formats</li>
-      <li>Room access for joined players only</li>
-      <li>Live leaderboard APIs</li>
+      <li>✅ Role-based dashboards for Admin/Organizer/Player</li>
+      <li>✅ Knockout, League, and Battle Royale support</li>
+      <li>✅ Private room visibility for joined participants only</li>
+      <li>✅ Match results to leaderboard automation</li>
     </ul>
   </section>
 </div>
