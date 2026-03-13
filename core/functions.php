@@ -87,7 +87,14 @@ set_exception_handler(static function (Throwable $exception): void {
 
 function redirect(string $path): void
 {
-    header('Location: ' . config('base_url') . '/' . ltrim($path, '/'));
+    if (preg_match('#^https?://#i', $path) === 1) {
+        header('Location: ' . $path);
+        exit;
+    }
+
+    $base = rtrim((string)config('base_url', ''), '/');
+    $target = '/' . ltrim($path, '/');
+    header('Location: ' . ($base !== '' ? $base . $target : $target));
     exit;
 }
 
@@ -98,16 +105,21 @@ function current_user(): ?array
 
 function login_user(array $user): void
 {
+    session_regenerate_id(true);
+
     $_SESSION['user'] = [
         'id' => (int)$user['id'],
         'name' => $user['name'],
         'email' => $user['email'],
         'role' => $user['role'],
     ];
+
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
 function logout_user(): void
 {
+    unset($_SESSION['csrf_token']);
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
         $params = session_get_cookie_params();

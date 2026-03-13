@@ -1,12 +1,29 @@
 <?php
 function require_auth(): void
 {
-    if (!current_user()) {
+    $user = current_user();
+
+    if (!$user) {
         if (function_exists('is_api_request') && is_api_request()) {
             api_response(['error' => 'Unauthorized'], 401);
         }
 
         flash('error', 'Please login first.');
+        redirect('auth/login.php');
+    }
+
+    $stmt = db()->prepare('SELECT status FROM users WHERE id = ? LIMIT 1');
+    $stmt->execute([(int)$user['id']]);
+    $status = $stmt->fetchColumn();
+
+    if ($status !== 'active') {
+        logout_user();
+
+        if (function_exists('is_api_request') && is_api_request()) {
+            api_response(['error' => 'Account suspended'], 403);
+        }
+
+        flash('error', 'Your account is suspended.');
         redirect('auth/login.php');
     }
 }
