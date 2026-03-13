@@ -111,5 +111,5 @@ function verify_csrf_token(?string $token): bool
 
 function is_post(): bool
 {
-    return $_SERVER['REQUEST_METHOD'] === 'POST';
+    return ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST';
 }

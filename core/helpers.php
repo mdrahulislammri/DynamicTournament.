@@ -1,7 +1,17 @@
 <?php
-function e(string $value): string
+function e($value): string
 {
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    if ($value === null) {
+        return '';
+    }
+
+    if (is_bool($value)) {
+        $value = $value ? '1' : '0';
+    } elseif (!is_scalar($value)) {
+        $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '';
+    }
+
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
 }
 
 function flash(string $key, ?string $message = null)
@@ -19,6 +29,18 @@ function api_response(array $data, int $status = 200): void
 {
     http_response_code($status);
     header('Content-Type: application/json');
-    echo json_encode($data);
+
+    $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if ($json === false) {
+        $json = json_encode([
+            'error' => 'JSON encoding failed',
+            'code' => json_last_error(),
+        ]);
+        if ($status < 400) {
+            http_response_code(500);
+        }
+    }
+
+    echo $json;
     exit;
 }
