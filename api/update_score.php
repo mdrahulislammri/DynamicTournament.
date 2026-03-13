@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../core/functions.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+if (request_method() !== 'POST') {
     api_response(['error' => 'Method not allowed'], 405);
 }
 
@@ -35,6 +35,13 @@ $teamA = (int)$match['team_a_id'];
 $teamB = (int)$match['team_b_id'];
 if ($winnerId !== $teamA && $winnerId !== $teamB) {
     api_response(['error' => 'winner_team_id must be team_a or team_b'], 422);
+}
+
+
+$existingResultStmt = $db->prepare('SELECT id FROM match_results WHERE match_id = ? LIMIT 1');
+$existingResultStmt->execute([$matchId]);
+if ($existingResultStmt->fetch()) {
+    api_response(['error' => 'Match result already exists. Use admin match update page to edit it.'], 409);
 }
 
 $placementPoints = [1 => 12, 2 => 9, 3 => 7];
