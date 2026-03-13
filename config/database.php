@@ -6,11 +6,11 @@ function db(): PDO
         return $pdo;
     }
 
-    $host = '127.0.0.1';
-    $dbName = 'dynamic_tournament';
-    $user = 'root';
-    $pass = '';
-    $charset = 'utf8mb4';
+    $host = getenv('DB_HOST') ?: '127.0.0.1';
+    $dbName = getenv('DB_NAME') ?: 'dynamic_tournament';
+    $user = getenv('DB_USER') ?: 'root';
+    $pass = getenv('DB_PASS') ?: '';
+    $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
 
     $dsn = "mysql:host={$host};dbname={$dbName};charset={$charset}";
     $options = [
