@@ -18,3 +18,4 @@ Dynamic Tournament is a modular PHP 8 + MySQL esports tournament management plat
 - Match, room, leaderboard, and bracket modules
 - Secure PHP app with prepared statements, CSRF, sessions, bcrypt
 - JSON APIs under `/api`
+- Tailwind CSS loaded via CDN plus local theme overrides in `assets/css/tailwind.css`

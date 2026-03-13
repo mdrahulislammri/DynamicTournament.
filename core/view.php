@@ -7,6 +7,7 @@ function render_header(string $title): void
     $base = config('base_url');
     echo '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
     echo '<title>' . e($title) . ' | ' . e(config('app_name')) . '</title>';
+    echo '<script src="https://cdn.tailwindcss.com"></script>';
     echo '<link rel="stylesheet" href="' . $base . '/assets/css/tailwind.css">';
     echo '</head><body class="bg-slate-100 text-slate-900">';
     echo '<nav class="bg-slate-900 text-white px-6 py-4">';
