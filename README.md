@@ -33,3 +33,10 @@ Dynamic Tournament is a modular PHP 8 + MySQL esports tournament management plat
 - JSON APIs under `/api`
 - Tailwind CSS loaded via CDN plus local theme overrides in `assets/css/tailwind.css`
 - cPanel-friendly auto-detected base URL with `APP_URL` override support
+
+## Important error configuration (recommended)
+Set these in cPanel environment or `.htaccess`/server config:
+- `APP_DEBUG=false` (production নিরাপদ mode)
+- `APP_ERROR_LOG=/home/USER/logs/dynamic_tournament_error.log`
+
+When a server error happens, the app now logs details and shows a friendly 500 page / JSON response instead of raw fatal output.

@@ -19,6 +19,11 @@ function db(): PDO
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
-    $pdo = new PDO($dsn, $user, $pass, $options);
+    try {
+        $pdo = new PDO($dsn, $user, $pass, $options);
+    } catch (PDOException $exception) {
+        throw new RuntimeException('Database connection failed.', 0, $exception);
+    }
+
     return $pdo;
 }

@@ -3,6 +3,13 @@ $appConfig = require __DIR__ . '/../config/app.php';
 
 date_default_timezone_set($appConfig['timezone']);
 
+error_reporting(E_ALL);
+ini_set('log_errors', '1');
+if (!empty($appConfig['error_log'])) {
+    ini_set('error_log', $appConfig['error_log']);
+}
+ini_set('display_errors', $appConfig['debug'] ? '1' : '0');
+
 if (session_status() === PHP_SESSION_NONE) {
     session_name($appConfig['session_name']);
     session_start();
@@ -18,6 +25,45 @@ function config(string $key, $default = null)
     global $appConfig;
     return $appConfig[$key] ?? $default;
 }
+
+function is_api_request(): bool
+{
+    return strpos($_SERVER['REQUEST_URI'] ?? '', '/api/') !== false;
+}
+
+set_error_handler(static function (int $severity, string $message, string $file, int $line): void {
+    if (!(error_reporting() & $severity)) {
+        return;
+    }
+    throw new ErrorException($message, 0, $severity, $file, $line);
+});
+
+set_exception_handler(static function (Throwable $exception): void {
+    error_log(sprintf(
+        '[DynamicTournament] %s in %s:%d',
+        $exception->getMessage(),
+        $exception->getFile(),
+        $exception->getLine()
+    ));
+
+    $debug = config('debug', false) === true;
+
+    if (is_api_request()) {
+        api_response([
+            'error' => $debug ? $exception->getMessage() : 'Internal server error. Please try again later.',
+        ], 500);
+    }
+
+    http_response_code(500);
+    echo '<!doctype html><html><head><meta charset="utf-8"><title>Server Error</title></head><body style="font-family:Arial;padding:24px">';
+    echo '<h2>Something went wrong (500)</h2>';
+    echo '<p>Please check configuration and server logs.</p>';
+    if ($debug) {
+        echo '<pre>' . e($exception->getMessage() . "\n" . $exception->getFile() . ':' . $exception->getLine()) . '</pre>';
+    }
+    echo '</body></html>';
+    exit;
+});
 
 function redirect(string $path): void
 {
