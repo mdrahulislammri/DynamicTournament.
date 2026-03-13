@@ -1,23 +1,33 @@
 <?php
 require_once __DIR__ . '/../core/view.php';
+
 $errors = [];
 if (is_post()) {
     if (!verify_csrf_token($_POST['csrf_token'] ?? null)) {
         $errors['csrf'] = 'Invalid CSRF token.';
     }
+
     $errors += validate_required($_POST, ['email', 'password']);
+
     if (!$errors) {
         $stmt = db()->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([trim($_POST['email'])]);
         $user = $stmt->fetch();
+
         if (!$user || !password_verify($_POST['password'], $user['password_hash'])) {
             $errors['auth'] = 'Invalid credentials.';
+        } elseif (($user['status'] ?? 'active') !== 'active') {
+            $errors['auth'] = 'Your account is suspended. Contact support.';
         } else {
             login_user($user);
-            redirect($user['role'] === 'admin' ? 'admin/dashboard.php' : 'player/dashboard.php');
+            if (in_array($user['role'], ['admin', 'organizer'], true)) {
+                redirect('admin/dashboard.php');
+            }
+            redirect('player/dashboard.php');
         }
     }
 }
+
 render_header('Login');
 ?>
 <div class="bg-white p-6 rounded shadow">
